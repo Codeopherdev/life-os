@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life OS | Tu Sistema de Productividad</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <!-- Notificaciones Toast -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- ================= AUTH VIEW ================= -->
+    <main id="auth-view">
+        <div class="glass-card auth-card">
+            <div class="logo">
+                <i class="fa-solid fa-layer-group"></i>
+                <h1>Life OS</h1>
+                <p>Tu sistema de productividad y finanzas</p>
+            </div>
+
+            <form id="login-form" class="auth-form">
+                <div class="input-group">
+                    <label for="login-email">Correo electrónico</label>
+                    <input type="email" id="login-email" placeholder="tu@email.com" required>
+                </div>
+                <div class="input-group">
+                    <label for="login-password">Contraseña</label>
+                    <input type="password" id="login-password" placeholder="••••••••" required minlength="6">
+                </div>
+                <button type="submit" class="btn btn-primary" id="login-btn">
+                    <span>Iniciar Sesión</span>
+                </button>
+            </form>
+
+            <form id="register-form" class="auth-form hidden">
+                <div class="input-group">
+                    <label for="reg-name">Nombre completo</label>
+                    <input type="text" id="reg-name" placeholder="Juan Pérez" required>
+                </div>
+                <div class="input-group">
+                    <label for="reg-email">Correo electrónico</label>
+                    <input type="email" id="reg-email" placeholder="tu@email.com" required>
+                </div>
+                <div class="input-group">
+                    <label for="reg-password">Contraseña</label>
+                    <input type="password" id="reg-password" placeholder="Mínimo 6 caracteres" required minlength="6">
+                </div>
+                <button type="submit" class="btn btn-primary" id="register-btn">
+                    <span>Crear Cuenta</span>
+                </button>
+            </form>
+
+            <div class="toggle-mode">
+                <span id="toggle-text">¿No tienes cuenta?</span>
+                <button id="toggle-link" type="button" class="link-btn">Regístrate</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- ================= DASHBOARD VIEW ================= -->
+    <main id="dashboard-view" class="hidden">
+        
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="brand">
+                <h2>Life OS</h2>
+                <p>Gestiona tu día a día</p>
+            </div>
+            <nav class="top-nav">
+                <button class="nav-item active"><i class="fa-solid fa-check-circle"></i> Tareas</button>
+                <button class="nav-item"><i class="fa-solid fa-wallet"></i> Finanzas</button>
+                <button class="nav-item"><i class="fa-solid fa-calendar-days"></i> Calendario</button>
+                <button class="nav-item"><i class="fa-solid fa-book-open"></i> Hábitos</button>
+            </nav>
+            <div class="top-actions">
+                <div class="search-wrap">
+                    <input type="search" placeholder="Buscar tareas, proyectos o eventos..." id="global-search">
+                </div>
+                <div class="user-panel">
+                    <button class="icon-btn" id="notification-top-btn" title="Notificaciones"><i class="fa-solid fa-bell"></i></button>
+                    <div class="user-info">
+                        <div class="avatar" id="user-avatar">U</div>
+                        <div class="user-details">
+                            <span id="user-name">Usuario</span>
+                            <span id="user-email">email</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-logout" onclick="logout()" title="Cerrar sesión">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="app-shell">
+            <main class="main-content">
+                <section class="dashboard-summary" id="summary-cards"></section>
+                <article class="glass-card module-card module-large report-card">
+                    <div class="module-header">
+                        <i class="fa-solid fa-chart-line" style="color: #4f46e5;"></i>
+                        <h3>Registro y reporte</h3>
+                    </div>
+                    <div class="report-grid">
+                        <div class="report-item report-item-highlight">
+                            <span>Total gastado</span>
+                            <strong id="report-total-spent">S/0.00</strong>
+                            <small>Dinero consumido en gastos</small>
+                        </div>
+                        <div class="report-item">
+                            <span>Tareas pendientes</span>
+                            <strong id="report-pending-tasks">0</strong>
+                            <small>Quedan por completar</small>
+                        </div>
+                        <div class="report-item">
+                            <span>Hábitos activos</span>
+                            <strong id="report-active-habits">0</strong>
+                            <small>Hoy sin completar</small>
+                        </div>
+                        <div class="report-item">
+                            <span>Balance mensual</span>
+                            <strong id="report-balance">S/0.00</strong>
+                            <small>Ingresos - Gastos</small>
+                        </div>
+                    </div>
+                    <div class="report-actions">
+                        <button id="report-email-btn" class="btn btn-primary btn-small">Enviar reporte por correo</button>
+                    </div>
+                </article>
+
+                <section class="module-panel">
+                    <section class="module-section active" data-tab="tareas">
+                        <article class="glass-card module-card module-large">
+                            <div class="module-header">
+                                <i class="fa-solid fa-check-circle" style="color: var(--accent);"></i>
+                                <h3>Mis Tareas</h3>
+                            </div>
+
+                            <form id="task-form" class="task-form">
+                                <div class="form-row">
+                                    <input type="text" id="task-title" placeholder="¿Qué necesitas hacer?" required>
+                                    <select id="task-category">
+                                        <option value="tarea">Tarea</option>
+                                        <option value="ejercicio">Ejercicio</option>
+                                        <option value="lectura">Lectura</option>
+                                        <option value="estudio">Estudio</option>
+                                        <option value="otro">Otro</option>
+                                    </select>
+                                </div>
+                                <div class="form-row">
+                                    <input type="text" id="task-desc" placeholder="Descripción (opcional)">
+                                    <select id="task-priority">
+                                        <option value="baja">Baja</option>
+                                        <option value="media" selected>Media</option>
+                                        <option value="alta">Alta</option>
+                                    </select>
+                                    <input type="date" id="task-due">
+                                    <button type="submit" class="btn btn-primary btn-small">
+                                        <i class="fa-solid fa-plus"></i> Agregar
+                                    </button>
+                                </div>
+                            </form>
+
+                            <div class="task-toolbar">
+                                <div id="task-stats" class="task-stats"></div>
+                                <select id="task-filter" class="filter-select">
+                                    <option value="todas">Todas</option>
+                                    <option value="pendiente">Pendientes</option>
+                                    <option value="en_progreso">En progreso</option>
+                                    <option value="completada">Completadas</option>
+                                </select>
+                            </div>
+
+                            <div id="task-list" class="task-list">
+                                <div class="empty-state">
+                                    <i class="fa-solid fa-clipboard-check"></i>
+                                    <p>Cargando tareas...</p>
+                                </div>
+                            </div>
+                        </article>
+                    </section>
+
+                    <section class="module-section" data-tab="finanzas">
+                        <article class="glass-card module-card module-large">
+                            <div class="module-header">
+                                <i class="fa-solid fa-wallet" style="color: var(--primary);"></i>
+                                <h3>Finanzas</h3>
+                            </div>
+
+                            <form id="finance-form" class="task-form">
+                                <div class="form-row">
+                                    <select id="finance-type">
+                                        <option value="ingreso">Ingreso</option>
+                                        <option value="gasto">Gasto</option>
+                                        <option value="deuda">Deuda</option>
+                                        <option value="ahorro">Ahorro</option>
+                                    </select>
+                                    <input type="number" id="finance-amount" step="0.01" placeholder="Monto" required>
+                                </div>
+                                <div class="form-row">
+                                    <input type="text" id="finance-description" placeholder="Descripción (opcional)">
+                                    <input type="text" id="finance-category" placeholder="Categoría">
+                                    <input type="date" id="finance-date">
+                                    <button type="submit" class="btn btn-primary btn-small">Agregar</button>
+                                </div>
+                            </form>
+
+                            <div class="task-toolbar">
+                                <div id="finance-stats" class="task-stats"></div>
+                                <select id="finance-filter" class="filter-select">
+                                    <option value="todas">Todas</option>
+                                    <option value="ingreso">Ingresos</option>
+                                    <option value="gasto">Gastos</option>
+                                    <option value="deuda">Deudas</option>
+                                    <option value="ahorro">Ahorros</option>
+                                </select>
+                            </div>
+
+                            <div id="finance-list" class="task-list">
+                                <div class="empty-state">
+                                    <i class="fa-solid fa-wallet"></i>
+                                    <p>Cargando finanzas...</p>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="glass-card module-card">
+                            <div class="module-header">
+                                <i class="fa-solid fa-bullseye" style="color: #10b981;"></i>
+                                <h3>Metas de ahorro</h3>
+                            </div>
+
+                            <form id="goal-form" class="task-form">
+                                <div class="form-row">
+                                    <input type="text" id="goal-name" placeholder="Nombre de la meta" required>
+                                    <input type="text" id="goal-category" placeholder="Proyecto / Categoría">
+                                </div>
+                                <div class="form-row">
+                                    <input type="number" id="goal-target" step="0.01" placeholder="Monto objetivo" required>
+                                    <input type="number" id="goal-current" step="0.01" placeholder="Monto ahorrado">
+                                    <input type="date" id="goal-deadline">
+                                    <button type="submit" class="btn btn-primary btn-small">Agregar</button>
+                                </div>
+                            </form>
+
+                            <div class="task-toolbar">
+                                <div id="goal-stats" class="task-stats"></div>
+                            </div>
+
+                            <div id="goal-list" class="task-list"></div>
+                        </article>
+                    </section>
+
+                    <section class="module-section" data-tab="calendario">
+                        <article class="glass-card module-card module-large">
+                            <div class="module-header">
+                                <i class="fa-solid fa-calendar" style="color: #f59e0b;"></i>
+                                <h3>Calendario general</h3>
+                            </div>
+
+                            <div class="calendar-header" style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+                                <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:220px;">
+                                    <button id="calendar-prev" class="btn btn-small" type="button">&lt;</button>
+                                    <div class="calendar-title" id="calendar-month">Enero 2024</div>
+                                    <button id="calendar-next" class="btn btn-small" type="button">&gt;</button>
+                                </div>
+                                <div class="notification-settings" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                                    <label for="notification-time" style="font-size:0.9rem;color:var(--text-muted);">Recordatorio diario:</label>
+                                    <input id="notification-time" type="time" class="filter-select" value="08:00">
+                                    <button class="btn btn-small" id="notification-action-btn" type="button">Activar notificaciones</button>
+                                </div>
+                            </div>
+
+                            <div class="calendar-grid calendar-weekdays">
+                                <div>Lun</div>
+                                <div>Mar</div>
+                                <div>Mié</div>
+                                <div>Jue</div>
+                                <div>Vie</div>
+                                <div>Sáb</div>
+                                <div>Dom</div>
+                            </div>
+
+                            <div id="calendar-grid" class="calendar-grid"></div>
+
+                            <div id="calendar-detail" class="task-list" style="margin-top:16px;"></div>
+                        </article>
+                    </section>
+
+                    <section class="module-section" data-tab="habitos">
+                        <article class="glass-card module-card">
+                            <div class="module-header">
+                                <i class="fa-solid fa-book-open" style="color: #ec4899;"></i>
+                                <h3>Hábitos</h3>
+                            </div>
+                            <form id="habit-form" class="task-form">
+                                <div class="form-row">
+                                    <input type="text" id="habit-name" placeholder="Nombre del hábito" required>
+                                    <select id="habit-category">
+                                        <option value="ejercicio">Ejercicio</option>
+                                        <option value="lectura">Lectura</option>
+                                        <option value="estudio">Estudio</option>
+                                        <option value="otro">Otro</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-primary btn-small">Agregar</button>
+                                </div>
+                            </form>
+                            <div class="task-toolbar">
+                                <div id="habit-stats" class="task-stats"></div>
+                            </div>
+                            <div id="habit-list" class="task-list"></div>
+                        </article>
+                    </section>
+                </section>
+            </main>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/tasks.js"></script>
+    <script src="js/finances.js"></script>
+    <script src="js/goals.js"></script>
+    <script src="js/habits.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/calendar.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
